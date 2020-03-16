@@ -5,10 +5,14 @@
 #include <math.h>
 #include <mpi.h>
 
+
 FILE *open_file(const char *path, const char *mode);
 int load_data(long double *data);
-int check_size(int size, int D, int numbers_n);
-void add_numbers(long double *data, int size, int rank);
+int check_size(const int size, const int D, const int numbers_n);
+void add_numbers(long double *data, const int size);
+void get_neighbors(const int rank, int *neighbors, const int D);
+long double calculate_max(const int rank, const int D, long double my_number, int *neighbors);
+void print_max_number(const int rank, long double max_number);
 
 
 int main(int argc, char *argv[])
@@ -16,16 +20,17 @@ int main(int argc, char *argv[])
     int rank, size, D, numbers_n, finish;
     long double number, max_number;
     long double *data;
-    int *neighbors = malloc(NEIGHBORS_SIZE);
+    int *neighbors;
 
     /* Initialize MPI program */
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    /* Get size value */
+    /* Initialize value of variable */
     D = (int)log2(size);
-    data = malloc(size*sizeof(long double));
+    data = malloc(size * DATA_SIZE);
+    neighbors = malloc(D * NEIGHBOR_SIZE);
 
     if (rank == FIRST_RANK)
     {
@@ -36,18 +41,28 @@ int main(int argc, char *argv[])
 
         if (finish != TRUE)
         {
-           add_numbers(data, size, rank);
+            add_numbers(data, size);
         }
     }
 
+    /* Indicate to all nodes, if program finish or no */
     MPI_Bcast(&finish, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
     if (finish != TRUE)
     {
         MPI_Recv(&number, 1, MPI_LONG_DOUBLE, 0, MPI_ANY_TAG, MPI_COMM_WORLD, NULL);
+        
         printf("[X] RANK[%d] --> %.2Lf\n", rank, number);
+
+        get_neighbors(rank, neighbors, D);
+
+        max_number = calculate_max(rank, D, number, neighbors);
+
+        print_max_number(rank,max_number);
+
+
     }
-    
+
     /* Finalize MPI program */
     MPI_Finalize();
 
@@ -87,7 +102,8 @@ FILE *open_file(const char *path, const char *mode)
     return file;
 }
 
-int check_size(int size,int D, int numbers_n)
+/* Check hipercube's size (nº nodes) */
+int check_size(const int size, const int D, const int numbers_n)
 {
     int finish = FALSE;
     if (size != numbers_n)
@@ -99,16 +115,61 @@ int check_size(int size,int D, int numbers_n)
 }
 
 /* Add number to nodes (ranks) */
-void add_numbers(long double *data, int size, int rank)
+void add_numbers(long double *data, const int size)
 {
     int i;
     long double number;
 
-    for (i = 0; i < size; i++)
+    for(i = 0; i < size; i++)    
     {
         number = data[i];
         MPI_Send(&number, 1, MPI_LONG_DOUBLE, i, SEND_TAG, MPI_COMM_WORLD);
+        
+    }
+    
+    free(data);
+}
+
+/* Get rank's neighbours */
+void get_neighbors(const int my_rank, int *neighbors, const int D)
+{
+    int i, his_rank;
+
+    for(i = 0; i < D; i++)
+    {
+        /* Segun dimension se modifica con un uno la posiocion del bit*/
+        his_rank = 1 << i;
+        neighbors[i] = my_rank ^ his_rank;
+    }
+}
+
+/*Calculate the maxium value*/
+long double calculate_max(const int rank, const int D, long double my_number, int *neighbors)
+{
+    int i;
+    long double his_number;
+
+    for(i = 0; i < D; i++)
+    {
+        MPI_Send(&my_number, 1, MPI_LONG_DOUBLE, neighbors[i], SEND_TAG, MPI_COMM_WORLD);
+        MPI_Recv(&his_number, 1, MPI_LONG_DOUBLE, neighbors[i], MPI_ANY_TAG, MPI_COMM_WORLD, NULL);
+        
+        /* Get the max number */
+        my_number = (his_number < my_number ? my_number : his_number);    
     }
 
-    free(data);
+    return my_number;
+}
+
+/*Print the maximum value by First Rank (Rank == 0)*/
+void print_max_number(const int rank, long double max_number)
+{
+    if (rank == FIRST_RANK)
+    {
+        printf("\n[X] RANK[%d]: The maximum value is: %.2Lf\n", rank, max_number);
+
+        /*End message*/
+        printf("----------------------------------------------------------------------------------------\n");
+        printf("\t\t\t***** PROGRAM FINALIZED *****\n\n\n");
+    }
 }

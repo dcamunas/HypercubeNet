@@ -1,6 +1,4 @@
 /* CONSTANTS */
-#define L               3
-#define NEIGHBORS_N     4
 
 #define SEND_TAG        0
 
@@ -16,8 +14,8 @@
 
 #define SIZE                256
 #define MAX_SIZE            1024
-#define DATA_SIZE           SIZE*sizeof(long double)
-#define NEIGHBORS_SIZE      NEIGHBORS_N*sizeof(int)
+#define DATA_SIZE           sizeof(long double)
+#define NEIGHBOR_SIZE      sizeof(int)
 
 #define SEPARATOR   ","
 
