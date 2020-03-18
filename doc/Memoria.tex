@@ -301,7 +301,7 @@ En la sección corresondiente al algoritmo se explicara de forma más páctica e
 
 \begin{figure}[H]
   \centering
-    \includegraphics[width=95mm]{hipercubo.pdf}
+    \includegraphics[width=85mm]{hipercubo.pdf}
   \caption{Representación red hipercubo $2^3$ con los respectivos ranks.}
   \label{fig:matriz}
 \end{figure}
@@ -404,22 +404,30 @@ El objetivo principal de esta función es la del cálculo del número máximo de
 
 Para ello se explicará a continuaicón de una forma más práctica el procedimiento de este algoritmo, dado que en la sección 2.2.2 ya ha sido explicado de una forma más teoríca.
 
-----------------
+Esta función recogera como parámetros dos constantes, como son el rango actual\textbf{rank} y el número de dimensiones que tiene el hipercubo\textit{D}. Además del número que tiene almacenado el rank actual y su lista de vecinos (completada en la función \textit{get-neighbors()}). 
 
-\lstinputlisting[language=C]{code/calculate-v1.c}
 
+\lstinputlisting[language=C]{code/calculate_min.c}
+
+Con este algoritmo se realiza el envio de recepción de los vecinos, en este caso a diferencia del toroide se hace de uno a uno mediante un bucle que se repite D veces, es decir el número de vecinos que tengamos.
+
+Se puede ver como mediante las primitivas MPI-Send y MPI-Recv se realiza el envio y la recepción del número.
+Una vez realizado el intercambio nos quedamos, con el número mayor, y asi para todos los nodos.
+
+El valor que retorna esta función sería el número máximo del hipercubo, que posteriormente se encargará el \textit{rank 0} de imprimirlo por pantalla, esto se llevará a cabo en la función \textit{print-max-number()}.
+\clearpage
 
 Un ejemplo de representación del estado de la red, en un inicio y al final, tras haber calculado el máximo, seria el siguiente:
 
 \begin{figure}[H]
   \centering
   \subfigure{
-    \includegraphics[width=38mm]{matriz-ini.png}
+    \includegraphics[width=60mm]{hiper-ini.png}
   }
   \subfigure{
-  \includegraphics[width=22mm]{matriz-fin.png}
+  \includegraphics[width=64mm]{hiper-fin.png}
   }
-  \caption{Representación red hipercubo al inicio y al final}
+  \caption{Solución red hipercubo al inicio y al final}
   \label{fig:toroide}
 \end{figure}
 

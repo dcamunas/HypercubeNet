@@ -17,6 +17,7 @@ void print_max_number(const int rank, long double max_number);
 
 int main(int argc, char *argv[])
 {
+    /*Variables*/
     int rank, size, D, numbers_n, finish;
     long double number, max_number;
     long double *data;
@@ -50,10 +51,9 @@ int main(int argc, char *argv[])
 
     if (finish != TRUE)
     {
+        /*Receive number by the rank*/
         MPI_Recv(&number, 1, MPI_LONG_DOUBLE, 0, MPI_ANY_TAG, MPI_COMM_WORLD, NULL);
         
-        printf("[X] RANK[%d] --> %.2Lf\n", rank, number);
-
         get_neighbors(rank, neighbors, D);
 
         max_number = calculate_max(rank, D, number, neighbors);
@@ -125,6 +125,10 @@ void add_numbers(long double *data, const int size)
         number = data[i];
         MPI_Send(&number, 1, MPI_LONG_DOUBLE, i, SEND_TAG, MPI_COMM_WORLD);
         
+        /*Print number send to rank i*/
+        printf("[X] RANK[%d] --> %.2Lf\n", i, number);
+
+        
     }
     
     free(data);
@@ -137,8 +141,10 @@ void get_neighbors(const int my_rank, int *neighbors, const int D)
 
     for(i = 0; i < D; i++)
     {
-        /* Segun dimension se modifica con un uno la posiocion del bit*/
+        /* Depending on the dimension, the position of the bit is modified with one */
         his_rank = 1 << i;
+        
+        /*my_rank XOR his_rank*/
         neighbors[i] = my_rank ^ his_rank;
     }
 }

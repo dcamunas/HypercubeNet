@@ -13,4 +13,3 @@
 \contentsline {subsection}{\numberline {4.4}Envio de su n\IeC {\'u}mero a cada nodo (\textit {add-numbers})}{9}{subsection.4.4}
 \contentsline {subsection}{\numberline {4.5}Obtenci\IeC {\'o}n de los vecinos (\textit {get-neighbors})}{10}{subsection.4.5}
 \contentsline {subsection}{\numberline {4.6}C\IeC {\'a}lculo del n\IeC {\'u}mero m\IeC {\'a}ximo (\textit {calculate-min})}{11}{subsection.4.6}
-\contentsline {subsubsection}{\numberline {4.6.1}Mejora del algoritmo}{13}{subsubsection.4.6.1}
