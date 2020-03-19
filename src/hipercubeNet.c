@@ -8,20 +8,23 @@
 
 FILE *open_file(const char *path, const char *mode);
 int load_data(long double *data);
-int check_size(const int size, const int D, const int numbers_n);
-void add_numbers(long double *data, const int size);
-void get_neighbors(const int rank, int *neighbors, const int D);
-long double calculate_max(const int rank, const int D, long double my_number, int *neighbors);
+int check_size(const int numbers_n);
+void send_numbers(long double *data);
+void get_neighbors(const int rank, int *neighbors);
+long double calculate_max(const int rank, long double my_number, int *neighbors);
 void print_max_number(const int rank, long double max_number);
 
+/* Global variables declaration */
+int size, D;
 
 int main(int argc, char *argv[])
 {
-    /*Variables*/
-    int rank, size, D, numbers_n, finish;
+    /*Variables declaration*/
+    int rank, numbers_n, finish;
     long double number, max_number;
     long double *data;
     int *neighbors;
+    MPI_Status status;
 
     /* Initialize MPI program */
     MPI_Init(&argc, &argv);
@@ -38,11 +41,11 @@ int main(int argc, char *argv[])
         /*Get quantity of numbers*/
         numbers_n = load_data(data);
 
-        finish = check_size(size, D, numbers_n);
+        finish = check_size(numbers_n);
 
         if (finish != TRUE)
         {
-            add_numbers(data, size);
+            send_numbers(data);
         }
     }
 
@@ -52,15 +55,13 @@ int main(int argc, char *argv[])
     if (finish != TRUE)
     {
         /*Receive number by the rank*/
-        MPI_Recv(&number, 1, MPI_LONG_DOUBLE, 0, MPI_ANY_TAG, MPI_COMM_WORLD, NULL);
-        
-        get_neighbors(rank, neighbors, D);
+        MPI_Recv(&number, 1, MPI_LONG_DOUBLE, 0, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 
-        max_number = calculate_max(rank, D, number, neighbors);
+        get_neighbors(rank, neighbors);
+
+        max_number = calculate_max(rank, number, neighbors);
 
         print_max_number(rank,max_number);
-
-
     }
 
     /* Finalize MPI program */
@@ -103,7 +104,7 @@ FILE *open_file(const char *path, const char *mode)
 }
 
 /* Check hipercube's size (nº nodes) */
-int check_size(const int size, const int D, const int numbers_n)
+int check_size(const int numbers_n)
 {
     int finish = FALSE;
     if (size != numbers_n)
@@ -114,8 +115,8 @@ int check_size(const int size, const int D, const int numbers_n)
     }
 }
 
-/* Add number to nodes (ranks) */
-void add_numbers(long double *data, const int size)
+/* Send number to nodes (ranks) */
+void send_numbers(long double *data)
 {
     int i;
     long double number;
@@ -135,7 +136,7 @@ void add_numbers(long double *data, const int size)
 }
 
 /* Get rank's neighbours */
-void get_neighbors(const int my_rank, int *neighbors, const int D)
+void get_neighbors(const int my_rank, int *neighbors)
 {
     int i, his_rank;
 
@@ -150,15 +151,16 @@ void get_neighbors(const int my_rank, int *neighbors, const int D)
 }
 
 /*Calculate the maxium value*/
-long double calculate_max(const int rank, const int D, long double my_number, int *neighbors)
+long double calculate_max(const int rank, long double my_number, int *neighbors)
 {
     int i;
     long double his_number;
+    MPI_Status status;
 
     for(i = 0; i < D; i++)
     {
         MPI_Send(&my_number, 1, MPI_LONG_DOUBLE, neighbors[i], SEND_TAG, MPI_COMM_WORLD);
-        MPI_Recv(&his_number, 1, MPI_LONG_DOUBLE, neighbors[i], MPI_ANY_TAG, MPI_COMM_WORLD, NULL);
+        MPI_Recv(&his_number, 1, MPI_LONG_DOUBLE, neighbors[i], MPI_ANY_TAG, MPI_COMM_WORLD, &status);
         
         /* Get the max number */
         my_number = (his_number < my_number ? my_number : his_number);    
@@ -167,7 +169,7 @@ long double calculate_max(const int rank, const int D, long double my_number, in
     return my_number;
 }
 
-/*Print the maximum value by First Rank (Rank == 0)*/
+/*Print the maximum value by Rank 0*/
 void print_max_number(const int rank, long double max_number)
 {
     if (rank == FIRST_RANK)

@@ -9,7 +9,7 @@ LDLIBS := -lm
 CC := mpicc
 RUN := mpirun
 
-all : dirs hipercubeNet
+all : dirs hipercubeNet solution
 
 dirs:
 	mkdir -p $(DIREXE)
