@@ -6,7 +6,7 @@
 La compilación y ejecución se realiza de forma automática gracias a la herramienta Makefile.
 
 ## Descripción
-Esta práctica perteneciente al laboratorio de la asignatura de Diseño de Infraestructura de Redes (DIR) de ESI - UCLM.
+Esta práctica perteneciente al laboratorio de la asignatura de Diseño de Infraestructura de Redes (DIR) de ESI - UCLM.  
 Es una simulación de una *Red Hipercubo*, mediante la utilización de programación paralela **MPI** en lenguaje C.
 
 ## Creación de directorios necesarios
