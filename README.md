@@ -9,6 +9,13 @@ La compilación y ejecución se realiza de forma automática gracias a la herram
 Esta práctica perteneciente al laboratorio de la asignatura de Diseño de Infraestructura de Redes (DIR) de ESI - UCLM.  
 Es una simulación de una *Red Hipercubo*, mediante la utilización de programación paralela **MPI** en lenguaje C.
 
+### Enunciado
+Dado un archivo con nombre datos.dat, cuyo contenido es una lista de valores separados por comas, nuestro programa realizará lo siguiente: El proceso de rank 0 destribuirá a cada uno de los nodos de un Hipercubo de dimensión D, los 2^D numeros reales que estarán contenidos en el archivo datos.dat.
+
+En caso de que no se hayan lanzado suficientes elementos de proceso para los datos del programa, éste emitirá un error y todos los procesos finalizarán. En caso de que todos los procesos han recibido su correspondiente elemento, comenzará el proceso normal del programa.
+
+Se pide calcular el elemento mayor de toda la red, el elemento de proceso con rank 0 mostrará en su salida estándar el valor obtenido. La complejidad del algoritmo no superará O(logaritmo_base_2(n)) )) Con n número de elementos de la red.
+
 ## Creación de directorios necesarios
 Con este comando se crearan los diferentes directorios entre ellos el directorio que contiene el archivo ejecutable del programa.  
 **$ make dirs**  
