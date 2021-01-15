@@ -3,8 +3,6 @@
 # Red Hipercubo
 **Autor:** *David Camuñas*  
 
-La compilación y ejecución se realiza de forma automática gracias a la herramienta Makefile.
-
 ## Descripción
 Esta práctica perteneciente al laboratorio de la asignatura de Diseño de Infraestructura de Redes (DIR) de ESI - UCLM.  
 Es una simulación de una *Red Hipercubo*, mediante la utilización de programación paralela **MPI** en lenguaje C.
@@ -16,15 +14,16 @@ En caso de que no se hayan lanzado suficientes elementos de proceso para los dat
 
 Se pide calcular el elemento mayor de toda la red, el elemento de proceso con rank 0 mostrará en su salida estándar el valor obtenido. La complejidad del algoritmo no superará O(logaritmo_base_2(n)) )) Con n número de elementos de la red.
 
-## Creación de directorios necesarios
+## Manual de Usuario
+### Creación de directorios necesarios
 Con este comando se crearan los diferentes directorios entre ellos el directorio que contiene el archivo ejecutable del programa.  
 **$ make dirs**  
 
-## Limpieza de directorios
+### Limpieza de directorios
 Este comando se ha utilizado para limpiar los directorios en los que se almacenan los ejecutables y las clases objetos (explicada anteriormente su creación).\
 **$ make clean**
 
-## Compilación
+### Compilación
 El proceso de compilación, se puede realizar de varias formas:  
 * **Automaticamente con Makefile:** *$ make hipercubeNet*
 
@@ -32,7 +31,7 @@ El proceso de compilación, se puede realizar de varias formas:
 
 Donde se puede observar la opción *-I include/* la cual define donde se encuentran las librerias propias (*definitions.h*). Y la opción *-lm* esta opción define la utilización de la libreria *math.h* de **C**.
 
-## Ejecución
+### Ejecución
 Para la ejecución del programa se puede realizar al igual que la compilación de varias formas:  
 * **Automaticamente con Makefile:** *$ make solution*  
 Se ejecutará el ejecutable *./exec/hipercubeNet*
